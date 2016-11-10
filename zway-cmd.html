@@ -9,7 +9,8 @@
 			server: { value: "", type: "zway-server" },
 		},
 		inputs: 1,
-		outputs: 1,
+		outputs: 0,
+		align: "right",
 		icon: "light.png",
 		label: function() {
 			return this.name || "zway-cmd " + this.command;
@@ -49,6 +50,7 @@
 		<label for="node-input-load-list"> &nbsp;</label>
 		<a href="#" class="editor-button" id="node-input-load-list"><i class="fa fa-refresh"></i> Load device list</a>
 	</div>
+	<div class="form-tips"><b>Note:</b> see the <a href="http://docs.zwayhomeautomation.apiary.io/">API documentation</a> for a list of supported commands.</div>
 </script>
 
 <script type="text/x-red" data-help-name="zway-cmd">

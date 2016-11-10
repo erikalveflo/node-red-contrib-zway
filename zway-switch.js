@@ -22,7 +22,7 @@ module.exports = function(RED) {
 				if (err) {
 					return this.error(err);
 				}
-				return this.send(data);
+				//return this.send(data);
 			});
 		});
 	}
