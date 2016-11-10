@@ -4,8 +4,8 @@
 		color: "#a6bbcf",
 		defaults: {
 			name: { value: "" },
-			level: { value: "on", required: true },
-			device: { value: "", required: true },
+			level: { value: "on" },
+			device: { value: "" },
 			server: { value: "", type: "zway-server" },
 		},
 		inputs: 1,
@@ -49,6 +49,7 @@
 		<select id="node-input-level">
 			<option value="on">On</option>
 			<option value="off">Off</option>
+			<option value="">msg.level</option>
 		</select>
     </div>
     <div class="form-row">
