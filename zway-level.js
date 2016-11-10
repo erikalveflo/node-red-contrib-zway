@@ -17,7 +17,6 @@ module.exports = function(RED) {
 
 			this.server.sendCommand(this, path, (err, data) => {
 				if (err) {
-					this.status({fill: "gray", shape: "dot", text: "level: unknown"});
 					return this.error(err);
 				}
 				try {
