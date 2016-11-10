@@ -1,6 +1,7 @@
 "use strict";
 
 const http = require("http");
+const mustache = require("mustache");
 
 module.exports = function(RED) {
 	function ZWayServerNode(config) {
@@ -99,7 +100,7 @@ module.exports = function(RED) {
 				res.on("end", () => {
 					try {
 						var parsedData = JSON.parse(rawData);
-						return cb(null, { payload: parsedData });
+						return cb(null, parsedData);
 					} catch (e) {
 						this.errorStatus(node, "invalid json");
 						return cb("Invalid JSON in response: " + e.message + "\nBody: " + rawData, {});
@@ -143,6 +144,40 @@ module.exports = function(RED) {
 				});
 			});
 		};
+
+		RED.httpNode.get("/zway-devices", (req, res) => {
+			this.sendCommand(this, "devices", (err, data) => {
+				if (err) {
+					return res.sendStatus(500);
+				}
+
+				var list = data.data.devices;
+				var devices = [];
+				for (var d in list) {
+					d = list[d];
+					devices.push({
+						id: d.id,
+						type: d.deviceType,
+						level: d.metrics.level,
+						title: d.metrics.title,
+					});
+				}
+
+				var template =`
+					<label for="list"><i class="fa fa-list"></i> Device list</label>
+					<ul id="list">
+						{{#devices}}
+						<li>
+							<a href="#" onclick="$('#node-input-device').val('{{id}}')">
+								{{title}} ({{id}}) {{type}}
+							</a>
+						</li>
+						{{/devices}}
+					</ul>`;
+
+				res.send(mustache.render(template, {devices: devices}));
+			});
+		});
 	}
 	RED.nodes.registerType("zway-server", ZWayServerNode, {
 		credentials: {

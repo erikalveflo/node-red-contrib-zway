@@ -22,7 +22,8 @@ module.exports = function(RED) {
 				if (err) {
 					return this.error(err);
 				}
-				return this.send(data);
+				msg.payload = data;
+				return this.send(msg);
 			});
 		});
 	}

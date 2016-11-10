@@ -23,7 +23,8 @@ module.exports = function(RED) {
 				try {
 					var level = data.payload.data.metrics.level;
 					this.status({fill: "yellow", shape: "dot", text: "level: " + level});
-					this.send({ payload: level });
+					msg.payload = level;
+					this.send(msg);
 				}
 				catch (ex) {
 					this.status({fill: "red", shape: "ring", text: "invalid response"});

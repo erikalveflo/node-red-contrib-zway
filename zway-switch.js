@@ -22,6 +22,7 @@ module.exports = function(RED) {
 				if (err) {
 					return this.error(err);
 				}
+				this.status({fill: "yellow", shape: "dot", text: "level: " + level});
 				//return this.send(data);
 			});
 		});
