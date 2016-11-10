@@ -3,7 +3,7 @@
 var mustache = require("mustache");
 
 module.exports = function(RED) {
-	function ZWayCmdNode(config) {
+	function ZWayApiNode(config) {
 		RED.nodes.createNode(this, config);
 		this.server = RED.nodes.getNode(config.server);
 
@@ -13,13 +13,10 @@ module.exports = function(RED) {
 				return this.error("No Z-Way server configuration");
 			}
 
-			var device = config.device || msg.device || "";
-			var command = config.command || msg.command || "";
-			if (command.indexOf("{{") != -1) {
-				command = mustache.render(command, msg);
+			var path = config.path || msg.path;
+			if (path.indexOf("{{") != -1) {
+				path = mustache.render(path, msg);
 			}
-
-			var path = "devices/" + device + "/command/" + command;
 
 			this.server.sendCommand(this, path, (err, data) => {
 				if (err) {
@@ -29,5 +26,5 @@ module.exports = function(RED) {
 			});
 		});
 	}
-	RED.nodes.registerType("zway-cmd", ZWayCmdNode);
-};
+	RED.nodes.registerType("zway-api", ZWayApiNode);
+}

@@ -47,6 +47,8 @@
 </script>
 
 <script type="text/x-red" data-help-name="zway-level">
-	<p>Gets the level of a Z-Wave device. The target device is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID). The output emits the level as <code>msg.payload</code>.</p>
+	<p>Gets the level of a Z-Wave device.</p>
+	<p>The device can be configured within the node. If it is left blank it should be set in an incomming message on <code>msg.device</code>.</p>
+	<p>The output emits the level as <code>msg.payload</code>.</p>
 	<p>The level can take many different values depending on the device type. A binary switch will return <code>on</code> or <code>off</code>. An alarm may return <code>ALARM</code>. Some devices will return numbers, such as integers or floating point values.</p>
 </script>
