@@ -21,14 +21,9 @@ module.exports = function(RED) {
 					return this.error(err);
 				}
 				try {
-					var on = data.payload.data.metrics.level == "on";
-					if (on) {
-						this.status({fill: "yellow", shape: "dot", text: "level: on"});
-					}
-					else {
-						this.status({fill: "blue", shape: "dot", text: "level: off"});
-					}
-					this.send({ payload: on ? 1 : 0 });
+					var level = data.payload.data.metrics.level;
+					this.status({fill: "yellow", shape: "dot", text: "level: " + level});
+					this.send({ payload: level });
 				}
 				catch (ex) {
 					this.status({fill: "red", shape: "ring", text: "invalid response"});

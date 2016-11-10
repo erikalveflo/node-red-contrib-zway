@@ -37,7 +37,7 @@
 		<input type="text" id="node-input-server">
 	</div>
     <div class="form-row">
-		<label for="node-input-device"> Device</label>
+		<label for="node-input-device"><i class="fa fa-lightbulb-o"></i> Device</label>
 		<input type="text" id="node-input-device" placeholder="Device">
 	</div>
 	<div class="form-row">
@@ -47,5 +47,6 @@
 </script>
 
 <script type="text/x-red" data-help-name="zway-level">
-	<p>Gets the level of a Z-Wave binary switch. The target switch is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID). The output emits a <code>msg.payload</code> of either <code>1</code> (on) or <code>0</code> (off).</p>
+	<p>Gets the level of a Z-Wave device. The target device is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID). The output emits the level as <code>msg.payload</code>.</p>
+	<p>The level can take many different values depending on the device type. A binary switch will return <code>on</code> or <code>off</code>. An alarm may return <code>ALARM</code>. Some devices will return numbers, such as integers or floating point values.</p>
 </script>

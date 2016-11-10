@@ -4,7 +4,7 @@
 		color: "#a6bbcf",
 		defaults: {
 			name: { value: "" },
-			operation: { value: "on", required: true },
+			level: { value: "on", required: true },
 			device: { value: "", required: true },
 			server: { value: "", type: "zway-server" },
 		},
@@ -16,7 +16,7 @@
 				return this.name;
 			}
 			if (this.device) {
-				return "zway-switch " + this.operation;
+				return "zway-switch " + this.level;
 			}
 			return this.name || "zway-switch";
 		},
@@ -44,14 +44,14 @@
 		<input type="text" id="node-input-server">
 	</div>
 	<div class="form-row">
-		<label for="node-input-operation"><i class="fa fa-power-off"></i> Operation</label>
-		<select id="node-input-operation">
+		<label for="node-input-level"><i class="fa fa-power-off"></i> Level</label>
+		<select id="node-input-level">
 			<option value="on">On</option>
 			<option value="off">Off</option>
 		</select>
     </div>
     <div class="form-row">
-		<label for="node-input-device"> Device</label>
+		<label for="node-input-device"><i class="fa fa-lightbulb-o"></i> Device</label>
 		<input type="text" id="node-input-device" placeholder="Device">
 	</div>
 	<div class="form-row">
@@ -61,5 +61,5 @@
 </script>
 
 <script type="text/x-red" data-help-name="zway-switch">
-	<p>Sets the state of a Z-Wave binary switch to either ON or OFF. The target switch and operation is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID) and <code>msg.operation</code> (<em>on</em> or <em>off</em>.)</p>
+	<p>Sets the level of a Z-Wave binary switch to either ON or OFF. The target switch and level is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID) and <code>msg.level</code> (<em>on</em> or <em>off</em>.)</p>
 </script>

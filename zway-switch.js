@@ -13,10 +13,10 @@ module.exports = function(RED) {
 
 			var device = config.device || msg.device || "";
 
-			var operation = config.operation || msg.operation || "";
-			operation = operation.toLowerCase() == "on" ? "on" : "off";
+			var level = config.level || msg.level || "";
+			level = level.toLowerCase() == "on" ? "on" : "off";
 
-			var path = "devices/" + device + "/command/" + operation;
+			var path = "devices/" + device + "/command/" + level;
 
 			this.server.sendCommand(this, path, (err, data) => {
 				if (err) {
