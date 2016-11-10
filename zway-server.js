@@ -166,16 +166,24 @@ module.exports = function(RED) {
 				}
 
 				var template =`
-					<label for="list"><i class="fa fa-list"></i> Device list</label>
-					<ul id="list">
-						{{#devices}}
-						<li>
-							<a href="#" onclick="$('#node-input-device').val('{{id}}')">
-								{{title}} ({{id}}) {{type}}
-							</a>
-						</li>
-						{{/devices}}
-					</ul>`;
+					<table class="table table-condensed table-hover">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>ID</th>
+								<th>Type</th>
+							</tr>
+						</thead>
+						<tbody style="cursor: pointer">
+							{{#devices}}
+							<tr onclick="$('#node-input-device').val('{{id}}')">
+								<td>{{title}}</td>
+								<td>{{id}}</td>
+								<td>{{type}}</td>
+							</tr>
+							{{/devices}}
+						</tbody>
+					</table>`;
 
 				res.send(mustache.render(template, {devices: devices}));
 			});
