@@ -1,0 +1,43 @@
+<script type="text/javascript">
+	RED.nodes.registerType("zway-server", {
+		category: "config",
+		defaults: {
+			host: {
+				value: "raspberry_pi",
+				required: true,
+			},
+			port: {
+				value: 8083,
+				required: true,
+				validate: RED.validators.number(),
+			},
+		},
+		credentials: {
+			username: { type: "text" },
+			password: { type: "password" },
+		},
+		label: function() {
+			return this.host + ":" + this.port;
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="zway-server">
+	<div class="form-row">
+		<label for="node-config-input-host"><i class="icon-bookmark"></i> Host</label>
+		<input type="text" id="node-config-input-host" placeholder="Host (host name or IP address)">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-port"><i class="icon-bookmark"></i> Port</label>
+		<input type="text" id="node-config-input-port" placeholder="Port (default is 8083)">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-username"><i class="fa fa-user"></i> Username</label>
+		<input type="text" id="node-config-input-username" placeholder="Username">
+	</div>
+	<div class="form-row">
+		<label for="node-config-input-password"><i class="fa fa-lock"></i> Password</label>
+		<input type="password" id="node-config-input-password" placeholder="Password">
+	</div>
+	<div class="form-tips"><b>Note:</b> A running Z-Way server is required. See <a href="http://razberry.z-wave.me/">this page</a> for details.</div>
+</script>

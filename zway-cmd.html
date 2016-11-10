@@ -1,0 +1,40 @@
+<script type="text/javascript">
+	RED.nodes.registerType("zway-cmd", {
+		category: "zway",
+		color: "#a6bbcf",
+		defaults: {
+			name: { value: "" },
+			path: { value: "" },
+			server: { value:"", type: "zway-server" },
+		},
+		inputs: 1,
+		outputs: 1,
+		icon: "light.png",
+		label: function() {
+			return this.name || "zway-cmd";
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="zway-cmd">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-server"><i class="fa fa-cloud"></i> Server</label>
+		<input type="text" id="node-input-server">
+	</div>
+	<div class="form-row">
+		<label for="node-input-path"><i class="fa fa-link"></i> Path</label>
+		<input type="text" id="node-input-path" placeholder="Path">
+	</div>
+	<div class="form-tips"><b>Note:</b> "path" is the part of the request URL that comes after <code>/ZAutomation/api/v1/</code>. See info box for details. The API documentation can be found on <a href="http://docs.zwayhomeautomation.apiary.io/">this page</a>.</div>
+</script>
+
+<script type="text/x-red" data-help-name="zway-cmd">
+	<p>Issues a Z-Way <em>ZAutomation</em> API command.</p>
+	<p>The <em>ZAutomation</em> API is accessed using the HTTP protocol. As such, the URL determines the issued API. To reduce repetition most of the URL is created automatically from the server's address and port number. The last part of the URL is formed by joining <code>/ZAutomation/api/v1/</code> with the supplied path. For example, if "status" is supplied, the resulting URL is <code>http://localhost/ZAutomation/api/v1/<b>status</b></code>.</p>
+	<p>The path is either specified in the editor or supplied in a message as <code>msg.path</code>.</p>
+
+</script>

@@ -1,0 +1,65 @@
+<script type="text/javascript">
+	RED.nodes.registerType("zway-switch", {
+		category: "zway",
+		color: "#a6bbcf",
+		defaults: {
+			name: { value: "" },
+			operation: { value: "on", required: true },
+			device: { value: "", required: true },
+			server: { value: "", type: "zway-server" },
+		},
+		inputs: 1,
+		outputs: 1,
+		icon: "light.png",
+		label: function() {
+			if (this.name) {
+				return this.name;
+			}
+			if (this.device) {
+				return "zway-switch " + this.operation;
+			}
+			return this.name || "zway-switch";
+		},
+		oneditprepare: function() {
+			$("#node-input-load-list").click(() => {
+				var node = RED.nodes.node(this.id);
+				$.ajax({
+					url: "http://192.168.0.179:8083/ZAutomation/api/v1/devices",
+				})
+				.done((data) => {
+					console.log(data);
+				});
+			});
+		}
+	});
+</script>
+
+<script type="text/x-red" data-template-name="zway-switch">
+	<div class="form-row">
+		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
+		<input type="text" id="node-input-name" placeholder="Name">
+	</div>
+	<div class="form-row">
+		<label for="node-input-server"><i class="fa fa-cloud"></i> Server</label>
+		<input type="text" id="node-input-server">
+	</div>
+	<div class="form-row">
+		<label for="node-input-operation"><i class="fa fa-power-off"></i> Operation</label>
+		<select id="node-input-operation">
+			<option value="on">On</option>
+			<option value="off">Off</option>
+		</select>
+    </div>
+    <div class="form-row">
+		<label for="node-input-device"> Device</label>
+		<input type="text" id="node-input-device" placeholder="Device">
+	</div>
+	<div class="form-row">
+		<label for="node-input-load-list"> &nbsp;</label>
+		<a href="#" class="editor-button" id="node-input-load-list"><i class="fa fa-refresh"></i> Load device list</a>
+	</div>
+</script>
+
+<script type="text/x-red" data-help-name="zway-switch">
+	<p>Sets the state of a Z-Wave binary switch to either ON or OFF. The target switch and operation is either specified in the editor or supplied in a message as <code>msg.device</code> (device ID) and <code>msg.operation</code> (<em>on</em> or <em>off</em>.)</p>
+</script>
