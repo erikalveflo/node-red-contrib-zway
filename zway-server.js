@@ -145,7 +145,9 @@ module.exports = function(RED) {
 			});
 		};
 
-		RED.httpNode.get("/zway-devices", (req, res) => {
+		const url = "/zway-devices";
+
+		RED.httpNode.get(url, (req, res) => {
 			this.sendCommand(this, "devices", (err, data) => {
 				if (err) {
 					return res.sendStatus(500);
@@ -176,6 +178,14 @@ module.exports = function(RED) {
 					</ul>`;
 
 				res.send(mustache.render(template, {devices: devices}));
+			});
+		});
+
+		this.on("close",function() {
+			RED.httpNode._router.stack.forEach((route, i, routes) => {
+				if (route.route && route.route.path === url && route.route.methods["get"]) {
+					routes.splice(i,1);
+				}
 			});
 		});
 	}

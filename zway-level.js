@@ -20,14 +20,14 @@ module.exports = function(RED) {
 					return this.error(err);
 				}
 				try {
-					var level = data.payload.data.metrics.level;
+					var level = data.data.metrics.level;
 					this.status({fill: "yellow", shape: "dot", text: "level: " + level});
 					msg.payload = level;
 					this.send(msg);
 				}
 				catch (ex) {
 					this.status({fill: "red", shape: "ring", text: "invalid response"});
-					return this.error("Unable to read device level");
+					return this.error("Unable to read device level: " + ex);
 				}
 			});
 		});
