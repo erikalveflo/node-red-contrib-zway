@@ -21,6 +21,9 @@
 			}
 			return this.name || "zway-switch";
 		},
+		labelStyle: function() {
+			return this.name ? "node_label_italic" : "";
+		},
 		oneditprepare: function() {
 			$("#node-input-load-list").click(() => {
 				var node = RED.nodes.node(this.id);
