@@ -4,9 +4,12 @@
 		color: "#a6bbcf",
 		defaults: {
 			name: { value: "" },
-			command: { value: "" },
-			device: { value: "" },
 			server: { value: "", type: "zway-server" },
+			device: { value: "" },
+			deviceType: { value: "other" },
+			command: { value: "other" },
+			commandOther: { value: "" },
+			loadTrigger: { value: "" },
 		},
 		inputs: 1,
 		outputs: 0,
@@ -19,6 +22,143 @@
 			return this.name ? "node_label_italic" : "";
 		},
 		oneditprepare: function() {
+			const COMMANDS = {
+				battery: {
+					metrics: ["probeTitle", "scaleTitle", "level", "icon", "title"],
+					commands: ["open", "close"],
+				},
+				doorlock: {
+					metrics: ["level", "icon", "title"],
+					commands: [],
+				},
+				thermostat: {
+					metrics: ["scaleTitle", "min", "max", "level", "icon", "title"],
+					commands: [],
+					exact: ["level"],
+				},
+				switchBinary: {
+					metrics: ["level", "icon", "title"],
+					commands: ["on", "off", "update"],
+				},
+				switchBinaryThermostat: {
+					metrics: ["level", "icon", "title"],
+					commands: ["on", "off", "update"],
+				},
+				switchMultilevel: {
+					metrics: ["level", "icon", "title"],
+					commands: ["on", "off", "min", "max", "increase", "decrease"],
+					exact: ["level"],
+				},
+				switchMultilevelBlinds: {
+					metrics: ["level", "icon", "title"],
+					commands: ["up", "down", "upMax", "increase", "decrease", "startUp", "startDown", "stop", "update"],
+					exactSmooth: ["level"],
+				},
+				sensorBinary: {
+					metrics: ["probeTitle", "level", "icon", "title"],
+					commands: ["update"],
+				},
+				sensorMultilevel: {
+					metrics: ["probeTitle", "scaleTitle", "level", "icon", "title"],
+					commands: ["update"],
+				},
+				toggleButton: {
+					metrics: ["level", "icon", "title"],
+					commands: ["on"],
+				},
+				camera: {
+					metrics: ["icon", "title"],
+					commands: ["zoomIn", "zoomOut", "up", "down", "left", "right", "close", "open"],
+				},
+				switchControl: {
+					metrics: ["level", "icon", "title", "change"],
+					commands: ["on", "off", "upstart", "upstop", "downstart", "downstop"],
+				},
+				text: {
+					metrics: ["title", "text", "icon"],
+					commands: [],
+				},
+				sensorMultiline: {
+					metrics: ["multilineType", "title", "icon", "level"],
+					commands: [],
+				},
+				switchRGB: {
+					metrics: ["icon", "title", "color", "level"],
+					commands: ["on", "off"],
+					exact: ["red", "green", "blue"],
+				},
+				other: {
+					metrics: ["title", "text", "icon"],
+					commands: [],
+				}
+			};
+
+			var populateCommands = (selectedCommand) => {
+				var def = COMMANDS[$("#node-input-deviceType").val()];
+				def = def || COMMANDS["other"];
+
+				var select = $("#node-input-command");
+				select.children().remove();
+
+				for (var i = 0; i < def.commands.length; i++) {
+					var c = def.commands[i];
+					var o = select.append('<option value="' + c + '">' + c + '</option>');
+					if (c === selectedCommand) {
+						o.attr("selected", "selected");
+					}
+				}
+				if (def.exact) {
+					var c = def.exact.join(", ");
+					var o = select.append('<option value="exact">' + c + '</option>');
+				}
+				if (def.exactSmooth) {
+					var c = def.exactSmooth.join(", ");
+					var o = select.append('<option value="exactSmooth">' + c + '</option>');
+				}
+				var o = select.append('<option value="other">other</option>');
+			};
+
+			var hideShowOtherCommand = (otherCommand) => {
+				var d = COMMANDS[$("#node-input-deviceType").val()];
+				var c = $("#node-input-command").val();
+				var r = $("#other-command-row");
+				if (c == "other") {
+					r.show();
+				}
+				else if (c == "exact") {
+					otherCommand = "exact?" + d.exact.join("=&") + "=";
+					r.show();
+				}
+				else if (c == "exactSmooth") {
+					otherCommand = "exactSmooth?" + d.exactSmooth.join("=&") + "=";
+					r.show();
+				}
+				else {
+					r.hide();
+				}
+				$("#node-input-commandOther").val(otherCommand || "");
+			};
+
+			populateCommands();
+			hideShowOtherCommand();
+
+			// The editor will unfortunately overwrite the selected command if
+			// set too early (like above.) Wait for the editor to set all input
+			// values and then change the selection.
+			$("#node-input-loadTrigger").change(() => {
+				$("#node-input-command").val(this.command);
+				$("#node-input-commandOther").val(this.commandOther);
+
+				$("#node-input-deviceType").change(() => {
+					populateCommands();
+					hideShowOtherCommand();
+				});
+
+				$("#node-input-command").change(() => {
+					hideShowOtherCommand();
+				});
+			});
+
 			$("#node-load-list").click(() => {
 				$.ajax({ url: "zway-devices" }).done((data) => {
 					$("#node-list-row").html(data);
@@ -38,12 +178,44 @@
 		<input type="text" id="node-input-server">
 	</div>
 	<div class="form-row">
-		<label for="node-input-command"><i class="fa fa-link"></i> Command</label>
-		<input type="text" id="node-input-command" placeholder="Command">
-    </div>
-    <div class="form-row">
 		<label for="node-input-device"><i class="fa fa-lightbulb-o"></i> Device</label>
 		<input type="text" id="node-input-device" placeholder="Device">
+	</div>
+    <div class="form-row">
+		<label for="node-input-deviceType"><i class="fa fa-wrench"></i> Device type</label>
+		<select id="node-input-deviceType">
+			<option value="battery">Battery</option>
+			<option value="doorlock">Doorlock</option>
+			<option value="thermostat">Thermostat</option>
+			<option value="switchBinary">Binary switch</option>
+			<option value="switchBinaryThermostat">Binary switch (Thermostat)</option>
+			<option value="switchMultilevel">Multilevel switch</option>
+			<option value="switchMultilevelBlinds">Multilevel switch (Blinds)</option>
+			<option value="sensorBinary">Binary sensor</option>
+			<option value="sensorMultilevel">Multilevel sensor</option>
+			<option value="toggleButton">Toggle button</option>
+			<option value="camera">Camera</option>
+			<option value="switchControl">Control switch</option>
+			<option value="text">Text</option>
+			<option value="sensorMultiline">Multiline sensor</option>
+			<option value="switchRGB">RGB switch</option>
+			<option value="other">Other</option>
+		</select>
+    </div>
+    <div class="form-row">
+		<label for="node-input-command"><i class="fa fa-link"></i> Command</label>
+		<select id="node-input-command">
+			<option value="other">other</option>
+		</select>
+		<!--
+			Used to only for its change() event which is triggered when the
+			editor loads; after all input values are set.
+		-->
+		<input type="hidden" id="node-input-loadTrigger">
+	</div>
+    <div class="form-row" id="other-command-row">
+		<label for="node-input-commandOther">&nbsp;</label>
+		<input type="text" id="node-input-commandOther" placeholder="Command">
 	</div>
 	<div class="form-row">
 		<label for="node-load-list"> &nbsp;</label>
@@ -56,5 +228,5 @@
 <script type="text/x-red" data-help-name="zway-cmd">
 	<p>Sends a Z-Way device command.</p>
 	<p>The device and command property can be configured within the node. If they are left blank they should be set in an incomming message on <code>msg.device</code> and <code>msg.command</code>.</p>
-	<p>When configured within the node, the command property can contain <a href="http://mustache.github.io/mustache.5.html">mustache-style</a> tags. These allow the url to be constructed using values of the incoming message. For example, if the url is set to example.com/{{{topic}}}, it will have the value of msg.topic automatically inserted. Using {{{...}}} prevents mustache from escaping characters like / &and; etc.</p>
+	<p>When configured within the node, the command property can contain <a href="http://mustache.github.io/mustache.5.html">mustache-style</a> tags. These allow the url to be constructed using values of the incoming message. For example, if the url is set to <code>example.com/{{{topic}}}</code>, it will have the value of msg.topic automatically inserted. Using <code>{{{...}}}</code> prevents mustache from escaping characters like <code>/ &and;</code> etc.</p>
 </script>

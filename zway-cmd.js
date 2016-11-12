@@ -14,9 +14,16 @@ module.exports = function(RED) {
 			}
 
 			var device = config.device || msg.device || "";
-			var command = config.command || msg.command || "";
-			if (command.indexOf("{{") != -1) {
-				command = mustache.render(command, msg);
+
+			var command = config.command || "other";
+			if (command == "other" || command == "exact" || command == "exactSmooth") {
+				command = config.commandOther;
+			}
+			if (!command) {
+				command = msg.command || "";
+				if (command.indexOf("{{") != -1) {
+					command = mustache.render(command, msg);
+				}
 			}
 
 			var path = "devices/" + device + "/command/" + command;

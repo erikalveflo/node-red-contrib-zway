@@ -176,7 +176,7 @@ module.exports = function(RED) {
 						</thead>
 						<tbody style="cursor: pointer">
 							{{#devices}}
-							<tr onclick="$('#node-input-device').val('{{id}}')">
+							<tr onclick="$('#node-input-device').val('{{id}}'); $('#node-input-deviceType').val('{{type}}').trigger('change');">
 								<td>{{title}}</td>
 								<td>{{id}}</td>
 								<td>{{type}}</td>
