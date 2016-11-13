@@ -157,6 +157,9 @@ module.exports = function(RED) {
 				var devices = [];
 				for (var d in list) {
 					d = list[d];
+					if (d.visibility === false || d.permanently_hidden === true) {
+						continue;
+					}
 					devices.push({
 						id: d.id,
 						type: d.deviceType,

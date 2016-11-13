@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	RED.nodes.registerType("zway-cmd", {
+	RED.nodes.registerType("zway-metric", {
 		category: "zway",
 		color: "#a6bbcf",
 		defaults: {
@@ -7,16 +7,16 @@
 			server: { value: "", type: "zway-server" },
 			device: { value: "" },
 			deviceType: { value: "other" },
-			command: { value: "other" },
-			commandOther: { value: "" },
+			metric: { value: "other" },
+			metricOther: { value: "" },
 			loadTrigger: { value: "" },
 		},
 		inputs: 1,
-		outputs: 0,
+		outputs: 1,
 		align: "right",
 		icon: "light.png",
 		label: function() {
-			return this.name || "zway-cmd " + this.command;
+			return this.name || "zway-metric " + this.metric;
 		},
 		labelStyle: function() {
 			return this.name ? "node_label_italic" : "";
@@ -24,70 +24,66 @@
 		oneditprepare: function() {
 			const DEVICE_TYPES = {
 				battery: {
-					commands: ["open", "close"],
+					metrics: ["probeTitle", "scaleTitle", "level", "icon", "title"],
 				},
 				doorlock: {
-					commands: [],
+					metrics: ["level", "icon", "title"],
 				},
 				thermostat: {
-					commands: [],
-					exact: ["level"],
+					metrics: ["scaleTitle", "min", "max", "level", "icon", "title"],
 				},
 				switchBinary: {
-					commands: ["on", "off", "update"],
+					metrics: ["level", "icon", "title"],
 				},
 				switchBinaryThermostat: {
-					commands: ["on", "off", "update"],
+					metrics: ["level", "icon", "title"],
 				},
 				switchMultilevel: {
-					commands: ["on", "off", "min", "max", "increase", "decrease"],
-					exact: ["level"],
+					metrics: ["level", "icon", "title"],
 				},
 				switchMultilevelBlinds: {
-					commands: ["up", "down", "upMax", "increase", "decrease", "startUp", "startDown", "stop", "update"],
-					exactSmooth: ["level"],
+					metrics: ["level", "icon", "title"],
 				},
 				sensorBinary: {
-					commands: ["update"],
+					metrics: ["probeTitle", "level", "icon", "title"],
 				},
 				sensorMultilevel: {
-					commands: ["update"],
+					metrics: ["probeTitle", "scaleTitle", "level", "icon", "title"],
 				},
 				toggleButton: {
-					commands: ["on"],
+					metrics: ["level", "icon", "title"],
 				},
 				camera: {
-					commands: ["zoomIn", "zoomOut", "up", "down", "left", "right", "close", "open"],
+					metrics: ["icon", "title"],
 				},
 				switchControl: {
-					commands: ["on", "off", "upstart", "upstop", "downstart", "downstop"],
+					metrics: ["level", "icon", "title", "change"],
 				},
 				text: {
-					commands: [],
+					metrics: ["title", "text", "icon"],
 				},
 				sensorMultiline: {
-					commands: [],
+					metrics: ["multilineType", "title", "icon", "level"],
 				},
 				switchRGB: {
-					commands: ["on", "off"],
-					exact: ["red", "green", "blue"],
+					metrics: ["icon", "title", "color", "level"],
 				},
 				other: {
-					commands: [],
+					metrics: ["title", "text", "icon"],
 				}
 			};
 
-			var populateCommands = (selectedCommand) => {
+			var populateMetrics = (selectedMetric) => {
 				var t = DEVICE_TYPES[$("#node-input-deviceType").val()];
 				t = t || DEVICE_TYPES["other"];
 
-				var select = $("#node-input-command");
+				var select = $("#node-input-metric");
 				select.children().remove();
 
-				for (var i = 0; i < t.commands.length; i++) {
-					var c = t.commands[i];
+				for (var i = 0; i < t.metrics.length; i++) {
+					var c = t.metrics[i];
 					var o = select.append('<option value="' + c + '">' + c + '</option>');
-					if (c === selectedCommand) {
+					if (c === selectedMetric) {
 						o.attr("selected", "selected");
 					}
 				}
@@ -102,45 +98,36 @@
 				var o = select.append('<option value="other">other</option>');
 			};
 
-			var hideShowOtherCommand = (otherCommand) => {
-				var t = DEVICE_TYPES[$("#node-input-deviceType").val()];
-				var c = $("#node-input-command").val();
-				var r = $("#other-command-row");
+			var hideShowOtherMetrics = (otherMetric) => {
+				var c = $("#node-input-metric").val();
+				var r = $("#other-metric-row");
 				if (c == "other") {
-					r.show();
-				}
-				else if (c == "exact") {
-					otherCommand = "exact?" + t.exact.join("=&") + "=";
-					r.show();
-				}
-				else if (c == "exactSmooth") {
-					otherCommand = "exactSmooth?" + t.exactSmooth.join("=&") + "=";
 					r.show();
 				}
 				else {
 					r.hide();
 				}
-				$("#node-input-commandOther").val(otherCommand || "");
+				$("#node-input-metricOther").val(otherMetric || "");
 			};
 
-			populateCommands();
-			hideShowOtherCommand();
+			populateMetrics();
+			hideShowOtherMetrics();
 
-			// The editor will unfortunately overwrite the selected command if
+			// The editor will unfortunately overwrite the selected metric if
 			// set too early (like above.) Wait for the editor to set all input
 			// values and then change the selection.
 			$("#node-input-loadTrigger").change(() => {
 				$("#node-input-deviceType").change(() => {
-					populateCommands();
-					hideShowOtherCommand();
+					populateMetrics();
+					hideShowOtherMetrics();
 				});
 
-				$("#node-input-command").change(() => {
-					hideShowOtherCommand();
+				$("#node-input-metric").change(() => {
+					hideShowOtherMetrics();
 				});
 
-				$("#node-input-command").val(this.command);
-				hideShowOtherCommand(this.commandOther);
+				$("#node-input-metric").val(this.metric);
+				hideShowOtherMetrics(this.metricOther);
 			});
 
 			$("#node-load-list").click(() => {
@@ -152,7 +139,7 @@
 	});
 </script>
 
-<script type="text/x-red" data-template-name="zway-cmd">
+<script type="text/x-red" data-template-name="zway-metric">
 	<div class="form-row">
 		<label for="node-input-name"><i class="icon-tag"></i> Name</label>
 		<input type="text" id="node-input-name" placeholder="Name">
@@ -187,8 +174,8 @@
 		</select>
     </div>
     <div class="form-row">
-		<label for="node-input-command"><i class="fa fa-link"></i> Command</label>
-		<select id="node-input-command">
+		<label for="node-input-metric"><i class="fa fa-link"></i> Metric</label>
+		<select id="node-input-metric">
 			<option value="other">other</option>
 		</select>
 		<!--
@@ -197,20 +184,20 @@
 		-->
 		<input type="hidden" id="node-input-loadTrigger">
 	</div>
-    <div class="form-row" id="other-command-row">
-		<label for="node-input-commandOther">&nbsp;</label>
-		<input type="text" id="node-input-commandOther" placeholder="Command">
+    <div class="form-row" id="other-metric-row">
+		<label for="node-input-metricOther">&nbsp;</label>
+		<input type="text" id="node-input-metricOther" placeholder="Metric">
 	</div>
 	<div class="form-row">
 		<label for="node-load-list"> &nbsp;</label>
 		<a href="#" class="editor-button" id="node-load-list"><i class="fa fa-refresh"></i> Load device list</a>
 	</div>
 	<div class="form-row" id="node-list-row"></div>
-	<div class="form-tips"><b>Note:</b> see the <a href="http://docs.zwayhomeautomation.apiary.io/">API documentation</a> for a list of supported commands.</div>
+	<div class="form-tips"><b>Note:</b> see the <a href="http://docs.zwayhomeautomation.apiary.io/">API documentation</a> for a list of supported metrics.</div>
 </script>
 
-<script type="text/x-red" data-help-name="zway-cmd">
-	<p>Sends a Z-Way device command.</p>
-	<p>The device and command property can be configured within the node. If they are left blank they should be set in an incomming message on <code>msg.device</code> and <code>msg.command</code>.</p>
-	<p>When configured within the node, the command property can contain <a href="http://mustache.github.io/mustache.5.html">mustache-style</a> tags. These allow the url to be constructed using values of the incoming message. For example, if the url is set to <code>example.com/{{{topic}}}</code>, it will have the value of <code>msg.topic</code> automatically inserted. Using <code>{{{...}}}</code> prevents mustache from escaping characters like <code>/ &and;</code> etc.</p>
+<script type="text/x-red" data-help-name="zway-metric">
+	<p>Gets a Z-Way device metric.</p>
+	<p>The device and metric property can be configured within the node. If they are left blank they should be set in an incomming message on <code>msg.device</code> and <code>msg.metric</code>.</p>
+	<p>When configured within the node, the metric property can contain <a href="http://mustache.github.io/mustache.5.html">mustache-style</a> tags. These allow the url to be constructed using values of the incoming message. For example, if the url is set to <code>example.com/{{{topic}}}</code>, it will have the value of <code>msg.topic</code> automatically inserted. Using <code>{{{...}}}</code> prevents mustache from escaping characters like <code>/ &and;</code> etc.</p>
 </script>
