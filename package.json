@@ -1,0 +1,36 @@
+{
+  "name": "node-red-contrib-zway",
+  "version": "1.0.0",
+  "author": "Erik Alveflo",
+  "description": "Node-RED integration with Z-Way",
+  "license": "MIT",
+  "dependencies": {
+	"mustache": "^2.3.0"
+  },
+  "scripts": {},
+  "keywords": [
+    "node-red",
+    "light",
+    "zway",
+    "zwave"
+  ],
+  "bugs": {
+    "url": "https://github.com/erikalveflo/node-red-contrib-zway/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erikalveflo/node-red-contrib-zway.git"
+  },
+  "node-red": {
+    "nodes": {
+      "zway-api": "zway-api.js",
+      "zway-cmd": "zway-cmd.js",
+      "zway-level": "zway-level.js",
+      "zway-metric": "zway-metric.js",
+      "zway-server": "zway-server.js",
+      "zway-switch": "zway-switch.js"
+    }
+  },
+  "devDependencies": {},
+  "jest": {}
+}
